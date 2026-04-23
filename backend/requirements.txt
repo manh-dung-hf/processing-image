@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+sqlalchemy
+pydantic
+pydantic-settings
+python-multipart
+python-telegram-bot
+ollama
+httpx
+python-jose[cryptography]
+passlib[bcrypt]
+pillow
+aiosqlite
+python-dotenv

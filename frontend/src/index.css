@@ -1,0 +1,125 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://rsms.me/inter/inter.css');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  /* Colors — light */
+  --canvas: #FAF9F6;
+  --surface: #FFFFFF;
+  --surface-muted: #F1EFE8;
+  --surface-sunken: #F6F4EE;
+
+  --fg-primary: #17161C;
+  --fg-secondary: #5F5E5A;
+  --fg-tertiary: #888780;
+  --fg-disabled: #B4B2A9;
+
+  --border: rgba(23, 22, 28, 0.08);
+  --border-strong: rgba(23, 22, 28, 0.16);
+  --border-focus: #534AB7;
+
+  --accent: #534AB7;
+  --accent-hover: #3C3489;
+  --accent-soft: #EEEDFE;
+  --accent-soft-fg: #26215C;
+
+  --success: #1D9E75;
+  --success-soft: #E1F5EE;
+  --success-soft-fg: #085041;
+
+  --warning: #BA7517;
+  --warning-soft: #FAEEDA;
+  --warning-soft-fg: #854F0B;
+
+  --danger: #A32D2D;
+  --danger-soft: #FCEBEB;
+  --danger-soft-fg: #791F1F;
+
+  --info: #185FA5;
+  --info-soft: #E6F1FB;
+  --info-soft-fg: #0C447C;
+
+  /* Radius */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  /* Elevation */
+  --elevation-1: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --elevation-2: 0 4px 12px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --elevation-3: 0 12px 32px rgba(0, 0, 0, 0.10), 0 2px 4px rgba(0, 0, 0, 0.04);
+
+  /* Layout */
+  --sidebar-width: 220px;
+  --topbar-height: 52px;
+}
+
+.dark {
+  --canvas: #0E0D12;
+  --surface: #17161C;
+  --surface-muted: #1E1C24;
+  --surface-sunken: #141319;
+
+  --fg-primary: #F5F4EF;
+  --fg-secondary: #B4B2A9;
+  --fg-tertiary: #6E6D69;
+  --fg-disabled: #444441;
+
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --border-focus: #7F77DD;
+
+  --accent: #7F77DD;
+  --accent-hover: #AFA9EC;
+  --accent-soft: #26215C;
+  --accent-soft-fg: #CECBF6;
+
+  --success: #5DCAA5;
+  --success-soft: #085041;
+  --success-soft-fg: #9FE1CB;
+
+  --warning: #EF9F27;
+  --warning-soft: #633806;
+  --warning-soft-fg: #FAC775;
+
+  --danger: #E24B4A;
+  --danger-soft: #501313;
+  --danger-soft-fg: #F09595;
+
+  --info: #378ADD;
+  --info-soft: #0C447C;
+  --info-soft-fg: #B5D4F4;
+}
+
+@layer base {
+  body {
+    @apply bg-canvas text-fg-primary antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-feature-settings: 'cv11', 'ss01';
+  }
+}
+
+@layer utilities {
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      var(--surface-muted) 0%,
+      var(--surface) 50%,
+      var(--surface-muted) 100%
+    );
+    background-size: 800px 100%;
+    animation: shimmer 1.4s linear infinite;
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
