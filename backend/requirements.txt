@@ -1,8 +1,9 @@
 fastapi
-uvicorn
+uvicorn[standard]
 sqlalchemy
-pydantic
+pydantic[email]
 pydantic-settings
+email-validator
 python-multipart
 python-telegram-bot
 ollama

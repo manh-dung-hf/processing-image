@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
 
+
 class TagSchema(BaseModel):
     id: str
     label: str
@@ -10,6 +11,7 @@ class TagSchema(BaseModel):
 
     class Config:
         from_attributes = True
+
 
 class ImageMeta(BaseModel):
     id: str
@@ -30,9 +32,19 @@ class ImageMeta(BaseModel):
     class Config:
         from_attributes = True
 
+
 class ImageDetail(ImageMeta):
     ocr_text: Optional[str] = None
     ocr_confidence: Optional[float] = None
     ocr_engine: Optional[str] = None
     failed_reason: Optional[str] = None
-    # Add audit trail and related later
+    storage_key: Optional[str] = None
+
+
+class ImageListResponse(BaseModel):
+    items: List[ImageMeta]
+    total: int
+    next_cursor: Optional[str] = None
+
+    class Config:
+        from_attributes = True
