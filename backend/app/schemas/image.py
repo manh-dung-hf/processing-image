@@ -23,6 +23,7 @@ class ImageMeta(BaseModel):
     source: str
     status: str
     category: Optional[str] = None
+    storage_key: Optional[str] = None
     uploaded_at: datetime
     analyzed_at: Optional[datetime] = None
     ai_summary: Optional[str] = None

@@ -133,3 +133,26 @@
   0%   { background-position: -400px 0; }
   100% { background-position: 400px 0; }
 }
+
+/* ── Form input ──────────────────────────────────────────────────────────── */
+@layer components {
+  .form-input {
+    width: 100%;
+    height: 46px;
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0 16px;
+    font-size: 13px;
+    color: var(--fg-primary);
+    transition: all 0.2s ease;
+  }
+  .form-input::placeholder {
+    color: var(--fg-disabled);
+  }
+  .form-input:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(83, 74, 183, 0.15);
+    border-color: var(--accent);
+  }
+}

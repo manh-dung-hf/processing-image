@@ -1,20 +1,23 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Eye, EyeOff, AlertCircle, Loader2, UserPlus, Check } from 'lucide-react';
+import {
+  Eye, EyeOff, AlertCircle, Loader2, UserPlus, Check,
+  Shield, Sparkles, Send, Image as ImageIcon, Zap,
+} from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
-const FloatingOrb = ({ className, delay = 0, duration = 6 }) => (
+/* ─── Animated elements ───────────────────────────────────────────────────── */
+
+const Orb = ({ className, delay = 0, dur = 6 }) => (
   <motion.div
     className={className}
-    animate={{
-      y: [0, -20, 0],
-      x: [0, 10, 0],
-      scale: [1, 1.1, 1],
-    }}
-    transition={{ duration, delay, repeat: Infinity, ease: 'easeInOut' }}
+    animate={{ y: [0, -18, 0], x: [0, 8, 0], opacity: [0.4, 0.8, 0.4] }}
+    transition={{ duration: dur, delay, repeat: Infinity, ease: 'easeInOut' }}
   />
 );
+
+/* ─── Register Page ───────────────────────────────────────────────────────── */
 
 const RegisterPage = () => {
   const { register } = useAuth();
@@ -23,156 +26,146 @@ const RegisterPage = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPwd, setShowPwd] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [focusedField, setFocusedField] = useState(null);
+  const [focused, setFocused] = useState(null);
 
-  const passwordStrength = password.length === 0 ? 0 : password.length < 4 ? 1 : password.length < 6 ? 2 : password.length < 10 ? 3 : 4;
-  const strengthColors = ['bg-surface-muted', 'bg-danger', 'bg-warning', 'bg-warning', 'bg-success'];
-  const strengthLabels = ['', 'Weak', 'Fair', 'Good', 'Strong'];
+  const strength = password.length === 0 ? 0 : password.length < 4 ? 1 : password.length < 6 ? 2 : password.length < 10 ? 3 : 4;
+  const barColors = ['bg-[#E5E4DF]', 'bg-[#A32D2D]', 'bg-[#BA7517]', 'bg-[#BA7517]', 'bg-[#1D9E75]'];
+  const barLabels = ['', 'Weak', 'Fair', 'Good', 'Strong'];
+  const barTextColors = ['', 'text-danger', 'text-warning', 'text-warning', 'text-success'];
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
-
     try {
       await register(email, password, name);
       navigate('/gallery', { replace: true });
     } catch (err) {
-      const detail = err.response?.data?.detail;
-      if (typeof detail === 'string') {
-        setError(detail);
-      } else if (Array.isArray(detail)) {
-        setError(detail.map((d) => d.msg).join('. '));
-      } else {
-        setError('Unable to connect. Check if the backend is running.');
-      }
+      const d = err.response?.data?.detail;
+      setError(typeof d === 'string' ? d : Array.isArray(d) ? d.map((x) => x.msg).join('. ') : 'Unable to connect.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex">
-      {/* ── Left panel ────────────────────────────────────────── */}
-      <div className="hidden lg:flex lg:w-[50%] xl:w-[55%] relative overflow-hidden bg-[#17161C]">
+    <div className="min-h-screen flex bg-[#0c0b10]">
+      {/* ── LEFT — showcase ───────────────────────────────────── */}
+      <div className="hidden lg:flex lg:w-[52%] xl:w-[56%] relative overflow-hidden">
+        {/* Blobs */}
         <div className="absolute inset-0">
-          <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-bl from-success/15 via-transparent to-accent/10" />
-          <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-gradient-to-br from-accent/12 via-transparent to-transparent rounded-full blur-3xl" />
-          <div className="absolute bottom-20 right-20 w-[350px] h-[350px] bg-gradient-to-tl from-success/10 via-transparent to-transparent rounded-full blur-3xl" />
+          <div className="absolute top-[-8%] right-[-5%] w-[480px] h-[480px] rounded-full bg-[#1D9E75]/18 blur-[120px]" />
+          <div className="absolute bottom-[-8%] left-[-5%] w-[420px] h-[420px] rounded-full bg-[#534AB7]/15 blur-[100px]" />
+          <div className="absolute top-[50%] left-[40%] w-[280px] h-[280px] rounded-full bg-[#BA7517]/8 blur-[80px]" />
         </div>
 
-        <FloatingOrb className="absolute top-[20%] right-[20%] w-3 h-3 rounded-full bg-success/40 blur-[1px]" delay={0} />
-        <FloatingOrb className="absolute top-[50%] left-[25%] w-2 h-2 rounded-full bg-accent/50 blur-[1px]" delay={1} duration={7} />
-        <FloatingOrb className="absolute bottom-[25%] right-[35%] w-2.5 h-2.5 rounded-full bg-info/30 blur-[1px]" delay={0.5} duration={5} />
+        {/* Grid */}
+        <div className="absolute inset-0 opacity-[0.04]" style={{
+          backgroundImage: 'linear-gradient(rgba(255,255,255,.15) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.15) 1px, transparent 1px)',
+          backgroundSize: '48px 48px',
+        }} />
 
-        <div
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)',
-            backgroundSize: '60px 60px',
-          }}
-        />
+        {/* Orbs */}
+        <Orb className="absolute top-[18%] right-[18%] w-2 h-2 rounded-full bg-[#5DCAA5]" delay={0} />
+        <Orb className="absolute top-[45%] left-[22%] w-1.5 h-1.5 rounded-full bg-[#7F77DD]" delay={1} dur={7} />
+        <Orb className="absolute bottom-[22%] right-[30%] w-2.5 h-2.5 rounded-full bg-[#378ADD]" delay={0.5} dur={5} />
 
-        <div className="relative z-10 flex flex-col justify-between p-12 w-full">
-          <motion.div
-            initial={{ opacity: 0, y: -16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="flex items-center gap-3"
-          >
-            <div className="w-9 h-9 bg-accent rounded-lg flex items-center justify-center shadow-lg shadow-accent/20">
+        {/* Content */}
+        <div className="relative z-10 flex flex-col justify-between p-10 xl:p-14 w-full">
+          {/* Logo */}
+          <motion.div initial={{ opacity: 0, y: -14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="flex items-center gap-3">
+            <div className="w-9 h-9 bg-[#534AB7] rounded-lg flex items-center justify-center shadow-lg shadow-[#534AB7]/30">
               <div className="w-4 h-4 border-2 border-white rounded-full rotate-45" />
             </div>
             <span className="text-[20px] font-semibold text-white tracking-tight">Lumen</span>
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.15 }}
-            className="max-w-[420px]"
-          >
-            <h2 className="text-[36px] font-semibold text-white leading-[1.15] tracking-tight mb-4">
+          {/* Center */}
+          <div className="flex-1 flex flex-col justify-center py-10">
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="text-[38px] xl:text-[44px] font-bold text-white leading-[1.1] tracking-tight mb-4"
+            >
               Start building
               <br />
-              your visual library
-            </h2>
-            <p className="text-[15px] text-white/45 leading-relaxed mb-10">
+              <span className="bg-gradient-to-r from-[#5DCAA5] to-[#378ADD] bg-clip-text text-transparent">
+                your visual library
+              </span>
+            </motion.h2>
+
+            <motion.p
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="text-[15px] text-white/40 leading-relaxed max-w-[380px] mb-10"
+            >
               Create a free account and let AI organize your images automatically.
-            </p>
+            </motion.p>
 
             {/* Checklist */}
-            <div className="space-y-3">
+            <div className="space-y-3.5">
               {[
-                'Unlimited image uploads',
-                'AI-powered tagging & OCR',
-                'Telegram bot integration',
+                { icon: <ImageIcon size={13} />, text: 'Unlimited image uploads', color: '#7F77DD' },
+                { icon: <Sparkles size={13} />, text: 'AI-powered tagging & OCR', color: '#5DCAA5' },
+                { icon: <Send size={13} />, text: 'Telegram bot integration', color: '#378ADD' },
+                { icon: <Shield size={13} />, text: 'Secure workspace & roles', color: '#EF9F27' },
               ].map((item, i) => (
                 <motion.div
-                  key={item}
-                  initial={{ opacity: 0, x: -12 }}
+                  key={item.text}
+                  initial={{ opacity: 0, x: -16 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.4 + i * 0.1 }}
-                  className="flex items-center gap-2.5 text-[13px] text-white/50"
+                  transition={{ delay: 0.35 + i * 0.08 }}
+                  className="flex items-center gap-3"
                 >
-                  <div className="w-5 h-5 rounded-full bg-success/20 flex items-center justify-center">
-                    <Check size={11} className="text-success" />
+                  <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: `${item.color}18`, color: item.color }}>
+                    {item.icon}
                   </div>
-                  {item}
+                  <span className="text-[13px] text-white/55">{item.text}</span>
                 </motion.div>
               ))}
             </div>
-          </motion.div>
+          </div>
 
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.8 }}
-            className="text-[11px] text-white/20"
-          >
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.9 }} className="text-[11px] text-white/15">
             Lumen AI Image Platform · v1.0
           </motion.p>
         </div>
       </div>
 
-      {/* ── Right panel — form ────────────────────────────────── */}
+      {/* ── RIGHT — register form ─────────────────────────────── */}
       <div className="flex-1 flex items-center justify-center bg-canvas p-6 sm:p-10">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
           className="w-full max-w-[380px]"
         >
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="flex items-center gap-2.5 mb-10 lg:hidden"
-          >
+          {/* Mobile logo */}
+          <div className="flex items-center gap-2.5 mb-10 lg:hidden">
             <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center">
               <div className="w-3.5 h-3.5 border-2 border-white rounded-full rotate-45" />
             </div>
             <span className="text-[18px] font-semibold text-fg-primary tracking-tight">Lumen</span>
-          </motion.div>
+          </div>
 
-          <h1 className="text-[22px] font-semibold text-fg-primary tracking-tight mb-1">
-            Create account
-          </h1>
-          <p className="text-[13px] text-fg-tertiary mb-7">
-            Get started in under a minute
-          </p>
+          <h1 className="text-[24px] font-bold text-fg-primary tracking-tight mb-1">Create account</h1>
+          <p className="text-[13px] text-fg-tertiary mb-8">Get started in under a minute</p>
 
+          {/* Error */}
           <AnimatePresence>
             {error && (
               <motion.div
-                initial={{ opacity: 0, y: -8, height: 0 }}
-                animate={{ opacity: 1, y: 0, height: 'auto' }}
-                exit={{ opacity: 0, y: -8, height: 0 }}
-                className="mb-4 overflow-hidden"
+                initial={{ opacity: 0, y: -8, height: 0, marginBottom: 0 }}
+                animate={{ opacity: 1, y: 0, height: 'auto', marginBottom: 16 }}
+                exit={{ opacity: 0, y: -8, height: 0, marginBottom: 0 }}
+                className="overflow-hidden"
               >
-                <div className="bg-danger-soft border-[0.5px] border-danger/20 rounded-lg px-3.5 py-3 flex items-start gap-2.5">
+                <div className="bg-danger-soft border border-danger/20 rounded-xl px-4 py-3 flex items-start gap-2.5">
                   <AlertCircle size={15} className="text-danger flex-shrink-0 mt-0.5" />
                   <span className="text-[12px] text-danger-soft-fg leading-relaxed">{error}</span>
                 </div>
@@ -181,139 +174,90 @@ const RegisterPage = () => {
           </AnimatePresence>
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Name */}
-            <div>
-              <label className="block text-[12px] font-medium text-fg-secondary mb-2">
-                Full name
-              </label>
-              <motion.div animate={{ scale: focusedField === 'name' ? 1.005 : 1 }} transition={{ duration: 0.15 }}>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  onFocus={() => setFocusedField('name')}
-                  onBlur={() => setFocusedField(null)}
-                  placeholder="John Doe"
-                  required
-                  autoFocus
-                  autoComplete="name"
-                  className="w-full h-[44px] bg-surface border border-border rounded-lg px-4 text-[13px] text-fg-primary placeholder:text-fg-disabled focus:outline-none focus:ring-2 focus:ring-accent/25 focus:border-accent transition-all duration-200"
-                />
-              </motion.div>
-            </div>
+            <FormField label="Full name" focused={focused === 'name'}>
+              <input type="text" value={name} onChange={(e) => setName(e.target.value)}
+                onFocus={() => setFocused('name')} onBlur={() => setFocused(null)}
+                placeholder="John Doe" required autoFocus autoComplete="name" className="form-input" />
+            </FormField>
 
-            {/* Email */}
-            <div>
-              <label className="block text-[12px] font-medium text-fg-secondary mb-2">
-                Email address
-              </label>
-              <motion.div animate={{ scale: focusedField === 'email' ? 1.005 : 1 }} transition={{ duration: 0.15 }}>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  onFocus={() => setFocusedField('email')}
-                  onBlur={() => setFocusedField(null)}
-                  placeholder="you@example.com"
-                  required
-                  autoComplete="email"
-                  className="w-full h-[44px] bg-surface border border-border rounded-lg px-4 text-[13px] text-fg-primary placeholder:text-fg-disabled focus:outline-none focus:ring-2 focus:ring-accent/25 focus:border-accent transition-all duration-200"
-                />
-              </motion.div>
-            </div>
+            <FormField label="Email address" focused={focused === 'email'}>
+              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+                onFocus={() => setFocused('email')} onBlur={() => setFocused(null)}
+                placeholder="you@example.com" required autoComplete="email" className="form-input" />
+            </FormField>
 
-            {/* Password */}
             <div>
-              <label className="block text-[12px] font-medium text-fg-secondary mb-2">
-                Password
-              </label>
-              <motion.div
-                animate={{ scale: focusedField === 'password' ? 1.005 : 1 }}
-                transition={{ duration: 0.15 }}
-                className="relative"
-              >
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  value={password}
+              <FormField label="Password" focused={focused === 'password'}>
+                <input type={showPwd ? 'text' : 'password'} value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  onFocus={() => setFocusedField('password')}
-                  onBlur={() => setFocusedField(null)}
-                  placeholder="Min 6 characters"
-                  required
-                  minLength={6}
-                  autoComplete="new-password"
-                  className="w-full h-[44px] bg-surface border border-border rounded-lg px-4 pr-11 text-[13px] text-fg-primary placeholder:text-fg-disabled focus:outline-none focus:ring-2 focus:ring-accent/25 focus:border-accent transition-all duration-200"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  tabIndex={-1}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-fg-tertiary hover:text-fg-secondary transition-colors p-0.5"
-                >
-                  {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                  onFocus={() => setFocused('password')} onBlur={() => setFocused(null)}
+                  placeholder="Min 6 characters" required minLength={6} autoComplete="new-password"
+                  className="form-input pr-11" />
+                <button type="button" onClick={() => setShowPwd(!showPwd)} tabIndex={-1}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-fg-tertiary hover:text-fg-secondary transition-colors">
+                  {showPwd ? <EyeOff size={15} /> : <Eye size={15} />}
                 </button>
-              </motion.div>
+              </FormField>
 
               {/* Strength bar */}
-              {password.length > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  className="mt-2.5 flex items-center gap-2"
-                >
-                  <div className="flex gap-1 flex-1">
-                    {[1, 2, 3, 4].map((i) => (
-                      <div
-                        key={i}
-                        className={`h-[3px] flex-1 rounded-full transition-all duration-300 ${
-                          i <= passwordStrength ? strengthColors[passwordStrength] : 'bg-surface-muted'
-                        }`}
-                      />
-                    ))}
-                  </div>
-                  <span className={`text-[10px] font-medium ${
-                    passwordStrength <= 1 ? 'text-danger' : passwordStrength <= 3 ? 'text-warning' : 'text-success'
-                  }`}>
-                    {strengthLabels[passwordStrength]}
-                  </span>
-                </motion.div>
-              )}
+              <AnimatePresence>
+                {password.length > 0 && (
+                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
+                    className="mt-2.5 flex items-center gap-2.5 overflow-hidden">
+                    <div className="flex gap-1 flex-1">
+                      {[1, 2, 3, 4].map((i) => (
+                        <motion.div key={i}
+                          initial={{ scaleX: 0 }} animate={{ scaleX: 1 }}
+                          transition={{ duration: 0.3, delay: i * 0.05 }}
+                          className={`h-[4px] flex-1 rounded-full origin-left transition-colors duration-300 ${i <= strength ? barColors[strength] : 'bg-surface-muted'}`}
+                        />
+                      ))}
+                    </div>
+                    <span className={`text-[10px] font-semibold min-w-[36px] ${barTextColors[strength]}`}>
+                      {barLabels[strength]}
+                    </span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
-            <motion.button
-              type="submit"
-              disabled={loading}
-              whileHover={{ scale: loading ? 1 : 1.015 }}
-              whileTap={{ scale: loading ? 1 : 0.985 }}
-              className="w-full h-[44px] bg-accent text-white rounded-lg text-[13px] font-medium flex items-center justify-center gap-2 hover:brightness-110 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm shadow-accent/20"
+            <motion.button type="submit" disabled={loading}
+              whileHover={{ scale: loading ? 1 : 1.02 }} whileTap={{ scale: loading ? 1 : 0.98 }}
+              className="w-full h-[46px] bg-accent text-white rounded-xl text-[13px] font-semibold flex items-center justify-center gap-2 hover:brightness-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-accent/25"
             >
-              {loading ? (
-                <Loader2 size={16} className="animate-spin" />
-              ) : (
-                <>
-                  <UserPlus size={14} />
-                  Create account
-                </>
-              )}
+              {loading ? <Loader2 size={16} className="animate-spin" /> : <><UserPlus size={14} /><span>Create account</span></>}
             </motion.button>
           </form>
 
-          <div className="flex items-center gap-3 my-6">
-            <div className="flex-1 h-[0.5px] bg-border" />
-            <span className="text-[11px] text-fg-disabled">or</span>
-            <div className="flex-1 h-[0.5px] bg-border" />
-          </div>
+          <Divider />
 
           <p className="text-center text-[12px] text-fg-tertiary">
             Already have an account?{' '}
-            <Link to="/login" className="text-accent font-medium hover:underline">
-              Sign in
-            </Link>
+            <Link to="/login" className="text-accent font-semibold hover:underline">Sign in</Link>
           </p>
         </motion.div>
       </div>
     </div>
   );
 };
+
+/* ─── Shared ──────────────────────────────────────────────────────────────── */
+
+const FormField = ({ label, focused, children }) => (
+  <div>
+    <label className="block text-[12px] font-medium text-fg-secondary mb-2">{label}</label>
+    <motion.div animate={{ scale: focused ? 1.005 : 1 }} transition={{ duration: 0.15 }} className="relative">
+      {children}
+    </motion.div>
+  </div>
+);
+
+const Divider = () => (
+  <div className="flex items-center gap-3 my-6">
+    <div className="flex-1 h-px bg-border" />
+    <span className="text-[11px] text-fg-disabled select-none">or</span>
+    <div className="flex-1 h-px bg-border" />
+  </div>
+);
 
 export default RegisterPage;
