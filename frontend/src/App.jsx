@@ -9,6 +9,7 @@ import TimelinePage from './pages/TimelinePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import SettingsPage from './pages/SettingsPage';
+import TelegramConfigPage from './pages/TelegramConfigPage';
 
 // Placeholder pages
 const Placeholder = ({ title }) => (
@@ -42,6 +43,7 @@ function App() {
             <Route path="/upload" element={<UploadPage />} />
             <Route path="/analytics" element={<Placeholder title="Analytics" />} />
             <Route path="/ops" element={<Placeholder title="Operations" />} />
+            <Route path="/telegram" element={<TelegramConfigPage />} />
             <Route path="/settings" element={<SettingsPage />} />
           </Route>
         </Routes>

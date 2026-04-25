@@ -11,6 +11,7 @@ import {
   ChevronUp,
   LogOut,
   User,
+  Send,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import NavItem from './NavItem';
@@ -80,6 +81,7 @@ const Sidebar = () => {
         </h4>
         <nav className="flex flex-col gap-[4px]">
           <NavItem to="/ops" label="Operations" icon={<Activity size={14} />} badge="!" />
+          <NavItem to="/telegram" label="Telegram" icon={<Send size={14} />} />
           <NavItem to="/settings" label="Settings" icon={<Settings size={14} />} />
         </nav>
       </div>

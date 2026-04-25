@@ -155,3 +155,18 @@ class TelegramLinkCode(Base):
     expires_at = Column(DateTime(timezone=True), nullable=False)
     used_at = Column(DateTime(timezone=True))
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+class TelegramConfig(Base):
+    __tablename__ = "telegram_configs"
+    id = Column(String, primary_key=True, default=generate_uuid)
+    workspace_id = Column(String, ForeignKey("workspaces.id", ondelete="CASCADE"), nullable=False, unique=True)
+    bot_token = Column(String, nullable=False)
+    bot_username = Column(String)          # filled after validation
+    bot_name = Column(String)              # filled after validation
+    is_active = Column(Boolean, default=False)
+    webhook_secret = Column(String)        # random secret for webhook verification
+    last_connected_at = Column(DateTime(timezone=True))
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    created_by = Column(String, ForeignKey("users.id"))

@@ -9,7 +9,7 @@ from fastapi.staticfiles import StaticFiles
 
 from .db.base import Base
 from .db.session import engine
-from .routers import analytics, auth, images, ops, search
+from .routers import analytics, auth, images, ops, search, telegram
 
 # ─── Logging ──────────────────────────────────────────────────────────────────
 logging.basicConfig(level=logging.INFO)
@@ -54,6 +54,7 @@ app.include_router(images.router,    prefix="/api/v1/images",    tags=["Images"]
 app.include_router(search.router,    prefix="/api/v1/search",    tags=["Search"])
 app.include_router(analytics.router, prefix="/api/v1/analytics", tags=["Analytics"])
 app.include_router(ops.router,       prefix="/api/v1/ops",       tags=["Operations"])
+app.include_router(telegram.router,  prefix="/api/v1/telegram",  tags=["Telegram"])
 
 # ─── Static files (uploads) ───────────────────────────────────────────────────
 # Directory is guaranteed to exist by lifespan above
