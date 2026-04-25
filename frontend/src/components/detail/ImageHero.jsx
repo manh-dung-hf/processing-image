@@ -15,7 +15,7 @@ const ImageHero = ({ image, onZoomIn, onZoomOut, onRotate, onFullscreen }) => {
     <div className="bg-surface rounded-lg border-[0.5px] border-border p-[14px] relative group">
       <div className="bg-surface-sunken rounded-md overflow-hidden flex items-center justify-center min-h-[400px] max-h-[70vh]">
         <img 
-          src={image.fileUrl || `http://localhost:8000/uploads/${image.storage_key}`} 
+          src={image.fileUrl || `/uploads/${image.storage_key}`} 
           alt={image.filename}
           className="max-w-full max-h-full object-contain transition-transform duration-300 ease-spring"
           style={{ 

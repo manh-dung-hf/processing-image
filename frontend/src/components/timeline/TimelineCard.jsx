@@ -67,7 +67,7 @@ const TimelineCard = ({ image, index }) => {
           {/* Thumbnail */}
           <div className="relative w-[140px] min-h-[100px] flex-shrink-0 overflow-hidden bg-surface-sunken">
             <img
-              src={image.thumbnailUrl || `http://localhost:8000/uploads/${image.storage_key}`}
+              src={image.thumbnailUrl || `/uploads/${image.storage_key}`}
               alt={image.filename}
               className={cn(
                 'w-full h-full object-cover transition-transform duration-500',

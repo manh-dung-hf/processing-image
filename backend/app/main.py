@@ -16,20 +16,18 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 UPLOAD_DIR = Path("uploads")
-UPLOAD_DIR.mkdir(parents=True, exist_ok=True)  # ensure exists before StaticFiles binds
+UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 
 # ─── Lifespan ─────────────────────────────────────────────────────────────────
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup: ensure tables and uploads directory exist
     UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-
     logger.info("✅  Database tables ready.")
     yield
-    # Shutdown cleanup (if needed) goes here
+
 
 # ─── App ─────────────────────────────────────────────────────────────────────
 app = FastAPI(
@@ -40,9 +38,17 @@ app = FastAPI(
 )
 
 # ─── CORS ────────────────────────────────────────────────────────────────────
+# Explicit origins — allow_origins=["*"] + allow_credentials=True is INVALID
+# per the CORS spec and browsers will reject it.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:5173",    # Vite dev server
+        "http://localhost:4173",    # Vite preview
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:4173",
+        "http://localhost:3000",    # fallback
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -56,18 +62,15 @@ app.include_router(analytics.router, prefix="/api/v1/analytics", tags=["Analytic
 app.include_router(ops.router,       prefix="/api/v1/ops",       tags=["Operations"])
 app.include_router(telegram.router,  prefix="/api/v1/telegram",  tags=["Telegram"])
 
-# ─── Static files (uploads) ───────────────────────────────────────────────────
-# Directory is guaranteed to exist by lifespan above
+# ─── Static files (uploads) ──────────────────────────────────────────────────
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 
-# ─── WebSocket Connection Manager ────────────────────────────────────────────
+# ─── WebSocket ────────────────────────────────────────────────────────────────
 class ConnectionManager:
     def __init__(self):
         self.active_connections: Dict[str, List[WebSocket]] = {
-            "images": [],
-            "ops": [],
-            "notifications": [],
+            "images": [], "ops": [], "notifications": [],
         }
 
     async def connect(self, websocket: WebSocket, channel: str):
@@ -98,11 +101,10 @@ manager = ConnectionManager()
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket, token: str = None):
-    """Real-time channel for image processing events."""
     await manager.connect(websocket, "images")
     try:
         while True:
-            await websocket.receive_text()  # keep alive; handle messages if needed
+            await websocket.receive_text()
     except WebSocketDisconnect:
         manager.disconnect(websocket, "images")
 

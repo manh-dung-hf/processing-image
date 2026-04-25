@@ -1,7 +1,8 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
+import { API_BASE } from '../lib/api';
 
-const API = 'http://localhost:8000/api/v1/auth';
+const AUTH_API = `${API_BASE}/auth`;
 
 // Fallback user when backend is unavailable — allows browsing the app
 const FALLBACK_USER = {
@@ -25,40 +26,42 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(() => localStorage.getItem('token'));
   const [loading, setLoading] = useState(true);
+  const initRef = useRef(false);
 
-  // Axios instance with auth header
+  // Axios instance with current auth header
   const api = useCallback(() => {
     const t = localStorage.getItem('token');
     return axios.create({
-      baseURL: API,
+      baseURL: AUTH_API,
       headers: t ? { Authorization: `Bearer ${t}` } : {},
     });
   }, []);
 
-  // Fetch current user on mount / token change
+  // Bootstrap auth — runs ONCE on mount
   useEffect(() => {
-    const fetchUser = async () => {
+    if (initRef.current) return;
+    initRef.current = true;
+
+    const bootstrap = async () => {
       const stored = localStorage.getItem('token');
 
-      // If we have a token, try to validate it
+      // 1. Try existing token
       if (stored) {
         try {
-          const res = await axios.get(`${API}/me`, {
+          const res = await axios.get(`${AUTH_API}/me`, {
             headers: { Authorization: `Bearer ${stored}` },
           });
           setUser(res.data);
           setLoading(false);
           return;
         } catch {
-          // Token invalid — clear it
           localStorage.removeItem('token');
-          setToken(null);
         }
       }
 
-      // No valid token — try to auto-login with default credentials (dev bypass)
+      // 2. Auto-login with default admin (dev convenience)
       try {
-        const res = await axios.post(`${API}/login`, {
+        const res = await axios.post(`${AUTH_API}/login`, {
           email: 'admin@lumen.local',
           password: 'admin1234',
         });
@@ -67,17 +70,18 @@ export const AuthProvider = ({ children }) => {
         setToken(access_token);
         setUser(userData);
       } catch {
-        // Backend not reachable — use fallback user so the app is still usable
+        // 3. Backend unreachable — fallback user
         setUser(FALLBACK_USER);
       } finally {
         setLoading(false);
       }
     };
-    fetchUser();
-  }, [token]);
+
+    bootstrap();
+  }, []);
 
   const login = async (email, password) => {
-    const res = await axios.post(`${API}/login`, { email, password });
+    const res = await axios.post(`${AUTH_API}/login`, { email, password });
     const { access_token, user: userData } = res.data;
     localStorage.setItem('token', access_token);
     setToken(access_token);
@@ -86,7 +90,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const register = async (email, password, name) => {
-    await axios.post(`${API}/register`, { email, password, name });
+    await axios.post(`${AUTH_API}/register`, { email, password, name });
     return login(email, password);
   };
 

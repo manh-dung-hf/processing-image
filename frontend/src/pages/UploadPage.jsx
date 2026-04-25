@@ -31,7 +31,7 @@ const UploadPage = () => {
     formData.append('file', upload.file);
 
     try {
-      const response = await axios.post('http://localhost:8000/api/v1/images/upload', formData, {
+      const response = await axios.post('/api/v1/images/upload', formData, {
         onUploadProgress: (progressEvent) => {
           const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
           updateUploadStatus(upload.id, { progress });

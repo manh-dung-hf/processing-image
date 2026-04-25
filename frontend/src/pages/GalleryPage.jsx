@@ -38,7 +38,7 @@ const GalleryPage = () => {
   const fetchImages = useCallback(async () => {
     setError(null);
     try {
-      const response = await axios.get('http://localhost:8000/api/v1/images', {
+      const response = await axios.get('/api/v1/images', {
         params: {
           category: activeCategory === 'all' ? undefined : activeCategory,
         },

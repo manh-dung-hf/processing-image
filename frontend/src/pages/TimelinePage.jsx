@@ -68,7 +68,7 @@ const TimelinePage = () => {
     try {
       const params = {};
       if (statusFilter !== 'all') params.status = statusFilter;
-      const response = await axios.get('http://localhost:8000/api/v1/images', { params });
+      const response = await axios.get('/api/v1/images', { params });
       setImages(response.data.items || []);
     } catch (error) {
       console.error('Error fetching timeline:', error);

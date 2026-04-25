@@ -22,8 +22,7 @@ import Button from '../components/ui/Button';
 import { cn } from '../components/ui/Button';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
-
-const API = 'http://localhost:8000/api/v1/telegram';
+import { API_BASE } from '../lib/api';
 
 const TelegramConfigPage = () => {
   const { token, isAdmin } = useAuth();
@@ -46,7 +45,7 @@ const TelegramConfigPage = () => {
 
   const fetchConfig = async () => {
     try {
-      const res = await axios.get(`${API}/config`, { headers });
+      const res = await axios.get(`${API_BASE}/telegram/config`, { headers });
       setConfig(res.data);
     } catch {
       setConfig(null);
@@ -61,7 +60,7 @@ const TelegramConfigPage = () => {
     setTesting(true);
     setTestResult(null);
     try {
-      const res = await axios.post(`${API}/test`, { bot_token: botToken }, { headers });
+      const res = await axios.post(`${API_BASE}/telegram/test`, { bot_token: botToken }, { headers });
       setTestResult(res.data);
     } catch (err) {
       setTestResult({
@@ -79,7 +78,7 @@ const TelegramConfigPage = () => {
     setSaving(true);
     setSaveError('');
     try {
-      const res = await axios.post(`${API}/config`, { bot_token: botToken }, { headers });
+      const res = await axios.post(`${API_BASE}/telegram/config`, { bot_token: botToken }, { headers });
       setConfig(res.data);
       setBotToken('');
       setTestResult(null);
@@ -95,7 +94,7 @@ const TelegramConfigPage = () => {
     if (!confirm('Disconnect Telegram bot? Images will no longer be received.')) return;
     setDeleting(true);
     try {
-      await axios.delete(`${API}/config`, { headers });
+      await axios.delete(`${API_BASE}/telegram/config`, { headers });
       setConfig(null);
     } catch {
       // ignore

@@ -50,7 +50,7 @@ const ImageTile = ({ image, selected, selectionMode, onSelect, onOpen, index = 0
         )}
 
         <img
-          src={image.thumbnailUrl || `http://localhost:8000/uploads/${image.storage_key}`}
+          src={image.thumbnailUrl || `/uploads/${image.storage_key}`}
           alt={image.filename}
           onLoad={() => setImgLoaded(true)}
           className={cn(
