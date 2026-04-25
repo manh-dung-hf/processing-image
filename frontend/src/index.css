@@ -1,12 +1,15 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
+/* ── Fonts — must come FIRST ─────────────────────────────────────────────── */
 @import url('https://rsms.me/inter/inter.css');
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
 
+/* ── Tailwind v4 ─────────────────────────────────────────────────────────── */
+@import "tailwindcss";
+
+/* ── Wire in the legacy tailwind.config.js ───────────────────────────────── */
+@config "../tailwind.config.js";
+
+/* ── Design Tokens ───────────────────────────────────────────────────────── */
 :root {
-  /* Colors — light */
   --canvas: #FAF9F6;
   --surface: #FFFFFF;
   --surface-muted: #F1EFE8;
@@ -59,6 +62,8 @@
   /* Layout */
   --sidebar-width: 220px;
   --topbar-height: 52px;
+  --canvas-padding: 24px;
+  --content-max-width: 1440px;
 }
 
 .dark {
@@ -98,14 +103,19 @@
   --info-soft-fg: #B5D4F4;
 }
 
+/* ── Base styles ─────────────────────────────────────────────────────────── */
 @layer base {
   body {
-    @apply bg-canvas text-fg-primary antialiased;
+    background-color: var(--canvas);
+    color: var(--fg-primary);
     font-family: 'Inter', system-ui, sans-serif;
     font-feature-settings: 'cv11', 'ss01';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
+/* ── Shimmer ─────────────────────────────────────────────────────────────── */
 @layer utilities {
   .shimmer {
     background: linear-gradient(
@@ -120,6 +130,6 @@
 }
 
 @keyframes shimmer {
-  0% { background-position: -400px 0; }
+  0%   { background-position: -400px 0; }
   100% { background-position: 400px 0; }
 }

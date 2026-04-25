@@ -19,7 +19,7 @@ const AuditTrail = ({ events = [] }) => {
               {event.sub && <span className="text-[11px] text-fg-tertiary">{event.sub}</span>}
             </div>
             <span className="text-mono text-[11px] text-fg-tertiary">
-              {event.timestamp ? format(new_date(event.timestamp), 'HH:mm:ss') : '14:32:04'}
+              {event.timestamp ? format(new Date(event.timestamp), 'HH:mm:ss') : '14:32:04'}
             </span>
           </div>
         ))}

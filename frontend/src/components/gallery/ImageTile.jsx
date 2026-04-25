@@ -88,7 +88,7 @@ const ImageTile = ({ image, selected, selectionMode, onSelect, onOpen }) => {
         <div className={cn('w-[6px] h-[6px] rounded-full flex-shrink-0', statusColors[image.status])} />
         <span className="text-[12px] font-medium text-fg-primary truncate flex-1">{image.filename}</span>
         <span className="text-[11px] text-fg-tertiary tabular-nums">
-          {image.uploaded_at ? formatDistanceToNow(new_date(image.uploaded_at), { addSuffix: false }) : '2m'}
+          {image.uploaded_at ? formatDistanceToNow(new Date(image.uploaded_at), { addSuffix: false }) : '2m'}
         </span>
       </div>
 
