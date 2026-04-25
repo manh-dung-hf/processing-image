@@ -9,7 +9,7 @@ python-telegram-bot
 ollama
 httpx
 python-jose[cryptography]
-passlib[bcrypt]
+bcrypt
 pillow
 aiosqlite
 python-dotenv

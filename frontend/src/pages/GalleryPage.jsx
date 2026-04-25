@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import MasonryGrid from '../components/gallery/MasonryGrid';
 import GalleryEmpty from '../components/gallery/GalleryEmpty';
+import ImageDetailModal from '../components/gallery/ImageDetailModal';
 import Chip from '../components/ui/Chip';
 import Button from '../components/ui/Button';
 
@@ -34,6 +35,7 @@ const GalleryPage = () => {
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [viewMode, setViewMode] = useState('masonry');
   const [refreshing, setRefreshing] = useState(false);
+  const [detailId, setDetailId] = useState(null);
 
   const fetchImages = useCallback(async () => {
     setError(null);
@@ -79,6 +81,28 @@ const GalleryPage = () => {
       setSelectedIds(new Set(images.map((i) => i.id)));
     }
   }, [images, selectedIds.size]);
+
+  const handleBulkDelete = async () => {
+    if (!confirm(`Delete ${selectedIds.size} image(s)? This cannot be undone.`)) return;
+    try {
+      await Promise.all(
+        [...selectedIds].map((id) => axios.delete(`/api/v1/images/${id}`))
+      );
+      setImages((prev) => prev.filter((i) => !selectedIds.has(i.id)));
+      setSelectedIds(new Set());
+    } catch {
+      // ignore partial failures
+    }
+  };
+
+  const handleImageDeleted = (id) => {
+    setImages((prev) => prev.filter((i) => i.id !== id));
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      next.delete(id);
+      return next;
+    });
+  };
 
   // Stats
   const stats = useMemo(() => {
@@ -228,7 +252,7 @@ const GalleryPage = () => {
               loading={loading}
               selectedIds={selectedIds}
               onSelect={handleSelect}
-              onOpen={(id) => console.log('Open image', id)}
+              onOpen={(id) => setDetailId(id)}
               viewMode={viewMode}
             />
           </motion.div>
@@ -281,7 +305,7 @@ const GalleryPage = () => {
               size="sm"
               icon={<Trash2 size={12} />}
               className="text-danger hover:bg-danger-soft/50"
-              onClick={() => {}}
+              onClick={handleBulkDelete}
             >
               Delete
             </Button>
@@ -299,6 +323,14 @@ const GalleryPage = () => {
           </motion.div>
         )}
       </AnimatePresence>
+      {/* ── Image Detail Modal ─────────────────────────────── */}
+      <ImageDetailModal
+        imageId={detailId}
+        images={images}
+        onClose={() => setDetailId(null)}
+        onDelete={handleImageDeleted}
+        onNavigate={(id) => setDetailId(id)}
+      />
     </div>
   );
 };
