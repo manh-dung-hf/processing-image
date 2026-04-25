@@ -1,9 +1,10 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { Upload as UploadIcon } from 'lucide-react';
 import Button, { cn } from '../ui/Button';
 
 const DropZone = ({ onFiles, accept = 'image/*', maxSize = 50 * 1024 * 1024 }) => {
   const [isDragOver, setIsDragOver] = useState(false);
+  const fileInputRef = useRef(null);
 
   const handleDragOver = useCallback((e) => {
     e.preventDefault();
@@ -27,13 +28,19 @@ const DropZone = ({ onFiles, accept = 'image/*', maxSize = 50 * 1024 * 1024 }) =
     if (onFiles) onFiles(files);
   };
 
+  const handleChooseFiles = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    fileInputRef.current?.click();
+  };
+
   return (
     <div
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
       className={cn(
-        'w-full p-[36px_24px] rounded-lg border-[1.5px] dashed border-border-strong bg-surface transition-all duration-160 ease-out flex flex-col items-center justify-center text-center',
+        'w-full p-[36px_24px] rounded-lg border-[1.5px] border-dashed border-border-strong bg-surface transition-all duration-160 ease-out flex flex-col items-center justify-center text-center',
         isDragOver ? 'border-accent bg-accent-soft/30 scale-[1.01]' : 'hover:border-accent/50'
       )}
     >
@@ -45,16 +52,22 @@ const DropZone = ({ onFiles, accept = 'image/*', maxSize = 50 * 1024 * 1024 }) =
         Or press ⌘V to paste · max 50 MB per file · JPEG, PNG, HEIC, WebP
       </p>
       
-      <label>
-        <input 
-          type="file" 
-          multiple 
-          accept={accept} 
-          className="hidden" 
-          onChange={handleFileChange}
-        />
-        <Button variant="primary" size="md">Choose files</Button>
-      </label>
+      <input 
+        ref={fileInputRef}
+        type="file" 
+        multiple 
+        accept={accept} 
+        className="hidden" 
+        onChange={handleFileChange}
+      />
+      <Button 
+        type="button"
+        variant="primary" 
+        size="md" 
+        onClick={handleChooseFiles}
+      >
+        Choose files
+      </Button>
     </div>
   );
 };
