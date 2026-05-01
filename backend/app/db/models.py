@@ -71,6 +71,11 @@ class Image(Base):
     height = Column(Integer, nullable=False)
     hash_sha256 = Column(String, nullable=False)
 
+    # media type: image | video
+    media_type = Column(String, default="image")  # image | video
+    duration = Column(Numeric(10, 2))              # seconds (video only)
+    thumbnail_key = Column(String)                 # storage key for video thumbnail
+
     # storage abstraction
     storage_provider = Column(String, nullable=False) # local | s3 | gcs | azure
     storage_bucket = Column(String)

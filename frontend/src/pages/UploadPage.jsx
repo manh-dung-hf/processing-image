@@ -66,7 +66,7 @@ const UploadPage = () => {
     <div className="space-y-8 max-w-[800px] mx-auto">
       <div>
         <h1 className="text-h1 font-medium text-fg-primary">Upload</h1>
-        <p className="text-small text-fg-tertiary mt-1">Add images to your workspace for analysis.</p>
+        <p className="text-small text-fg-tertiary mt-1">Add images and videos to your workspace for analysis.</p>
       </div>
 
       <DropZone onFiles={handleFiles} />
@@ -91,7 +91,7 @@ const UploadPage = () => {
                 )}
               >
                 <div className="w-10 h-10 rounded-sm bg-surface-sunken flex items-center justify-center">
-                   {u.status === 'uploading' ? <Loader2 size={16} className="animate-spin text-fg-tertiary" /> : <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: `url(${URL.createObjectURL(u.file)})` }} />}
+                   {u.status === 'uploading' ? <Loader2 size={16} className="animate-spin text-fg-tertiary" /> : u.file.type.startsWith('video/') ? <div className="w-full h-full bg-surface-sunken flex items-center justify-center text-fg-tertiary"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="5 3 19 12 5 21 5 3"/></svg></div> : <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: `url(${URL.createObjectURL(u.file)})` }} />}
                 </div>
                 <div>
                   <div className="text-[12px] font-medium text-fg-primary truncate max-w-[200px]">{u.filename}</div>

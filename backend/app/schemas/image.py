@@ -24,6 +24,9 @@ class ImageMeta(BaseModel):
     status: str
     category: Optional[str] = None
     storage_key: Optional[str] = None
+    media_type: Optional[str] = "image"
+    duration: Optional[float] = None
+    thumbnail_key: Optional[str] = None
     uploaded_at: datetime
     analyzed_at: Optional[datetime] = None
     ai_summary: Optional[str] = None
@@ -39,7 +42,6 @@ class ImageDetail(ImageMeta):
     ocr_confidence: Optional[float] = None
     ocr_engine: Optional[str] = None
     failed_reason: Optional[str] = None
-    storage_key: Optional[str] = None
 
 
 class ImageListResponse(BaseModel):

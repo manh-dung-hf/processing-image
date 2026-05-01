@@ -4,7 +4,7 @@ import axios from 'axios';
 import {
   X, Download, Trash2, Copy, Check, Sparkles, FileText,
   Clock, Tag as TagIcon, Loader2, ExternalLink,
-  Plus, Minus, RotateCcw, ChevronLeft, ChevronRight,
+  Plus, Minus, RotateCcw, ChevronLeft, ChevronRight, Film,
 } from 'lucide-react';
 import { formatDistanceToNow, format } from 'date-fns';
 import { cn } from '../ui/Button';
@@ -99,14 +99,25 @@ const ImageDetailModal = ({ imageId, images, onClose, onDelete, onNavigate }) =>
                 {loading ? (
                   <Loader2 size={24} className="animate-spin text-fg-tertiary" />
                 ) : img?.storage_key ? (
-                  <img
-                    src={`/uploads/${img.storage_key}`}
-                    alt={img.filename}
-                    className="max-w-full max-h-full object-contain transition-transform duration-300"
-                    style={{ transform: `rotate(${rotation}deg) scale(${zoom})` }}
-                  />
+                  img.media_type === 'video' ? (
+                    <video
+                      src={`/uploads/${img.storage_key}`}
+                      poster={img.thumbnail_key ? `/uploads/${img.thumbnail_key}` : undefined}
+                      controls
+                      autoPlay
+                      muted
+                      className="max-w-full max-h-full object-contain rounded-md"
+                    />
+                  ) : (
+                    <img
+                      src={`/uploads/${img.storage_key}`}
+                      alt={img.filename}
+                      className="max-w-full max-h-full object-contain transition-transform duration-300"
+                      style={{ transform: `rotate(${rotation}deg) scale(${zoom})` }}
+                    />
+                  )
                 ) : (
-                  <p className="text-fg-tertiary text-[13px]">Image not available</p>
+                  <p className="text-fg-tertiary text-[13px]">Media not available</p>
                 )}
 
                 {/* Nav arrows */}
@@ -172,7 +183,8 @@ const ImageDetailModal = ({ imageId, images, onClose, onDelete, onNavigate }) =>
                     <MetaItem label="Source" value={detail.source} />
                     <MetaItem label="Size" value={formatBytes(detail.size_bytes)} />
                     <MetaItem label="Dimensions" value={`${detail.width}×${detail.height}`} />
-                    <MetaItem label="Type" value={detail.content_type} />
+                    <MetaItem label="Type" value={detail.media_type === 'video' ? 'Video' : 'Image'} />
+                    {detail.duration && <MetaItem label="Duration" value={`${Math.round(detail.duration)}s`} />}
                   </div>
 
                   {/* AI Summary */}

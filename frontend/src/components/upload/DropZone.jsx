@@ -2,7 +2,7 @@ import React, { useState, useCallback, useRef } from 'react';
 import { Upload as UploadIcon } from 'lucide-react';
 import Button, { cn } from '../ui/Button';
 
-const DropZone = ({ onFiles, accept = 'image/*', maxSize = 50 * 1024 * 1024 }) => {
+const DropZone = ({ onFiles, accept = 'image/*,video/mp4,video/quicktime,video/webm,video/x-matroska,video/x-msvideo', maxSize = 200 * 1024 * 1024 }) => {
   const [isDragOver, setIsDragOver] = useState(false);
   const fileInputRef = useRef(null);
 
@@ -47,9 +47,9 @@ const DropZone = ({ onFiles, accept = 'image/*', maxSize = 50 * 1024 * 1024 }) =
       <div className="w-[40px] h-[40px] rounded-full bg-accent-soft flex items-center justify-center text-accent mb-4">
         <UploadIcon size={18} />
       </div>
-      <h3 className="text-[15px] font-medium text-fg-primary mb-1">Drop images here</h3>
+      <h3 className="text-[15px] font-medium text-fg-primary mb-1">Drop files here</h3>
       <p className="text-[11px] text-fg-tertiary mb-6 max-w-[280px]">
-        Or press ⌘V to paste · max 50 MB per file · JPEG, PNG, HEIC, WebP
+        Images & videos · max 200 MB · JPEG, PNG, WebP, MP4, MOV, WebM, MKV
       </p>
       
       <input 

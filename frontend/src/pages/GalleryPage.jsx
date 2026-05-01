@@ -37,8 +37,8 @@ const GalleryPage = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [detailId, setDetailId] = useState(null);
 
-  const fetchImages = useCallback(async () => {
-    setError(null);
+  const fetchImages = useCallback(async (silent = false) => {
+    if (!silent) setError(null);
     try {
       const response = await axios.get('/api/v1/images', {
         params: {
@@ -47,8 +47,10 @@ const GalleryPage = () => {
       });
       setImages(response.data.items || []);
     } catch (err) {
-      console.error('Error fetching images:', err);
-      setError('Failed to load images. Make sure the backend is running.');
+      if (!silent) {
+        console.error('Error fetching images:', err);
+        setError('Failed to load images. Make sure the backend is running.');
+      }
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -59,6 +61,14 @@ const GalleryPage = () => {
     setLoading(true);
     fetchImages();
   }, [fetchImages]);
+
+  // Auto-refresh: poll every 3s when there are queued/processing images, or every 5s always (to catch new uploads from Telegram)
+  useEffect(() => {
+    const hasActive = images.some((i) => i.status === 'queued' || i.status === 'processing');
+    const interval = hasActive ? 3000 : 5000;
+    const id = setInterval(() => fetchImages(true), interval);
+    return () => clearInterval(id);
+  }, [images, fetchImages]);
 
   const handleRefresh = () => {
     setRefreshing(true);
@@ -107,7 +117,7 @@ const GalleryPage = () => {
   // Stats
   const stats = useMemo(() => {
     const analyzed = images.filter((i) => i.status === 'analyzed').length;
-    const processing = images.filter((i) => i.status === 'processing').length;
+    const processing = images.filter((i) => i.status === 'processing' || i.status === 'queued').length;
     return { total: images.length, analyzed, processing };
   }, [images]);
 

@@ -26,7 +26,16 @@ async def lifespan(app: FastAPI):
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     logger.info("✅  Database tables ready.")
+
+    # Auto-start Telegram polling if config exists
+    from .routers.telegram import auto_start_polling
+    await auto_start_polling()
+
     yield
+
+    # Stop polling on shutdown
+    from .routers.telegram import _stop_polling
+    _stop_polling()
 
 
 # ─── App ─────────────────────────────────────────────────────────────────────

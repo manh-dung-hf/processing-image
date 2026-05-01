@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { MoreHorizontal, ArrowUpRight, Heart, Check, Sparkles, Eye } from 'lucide-react';
+import { MoreHorizontal, ArrowUpRight, Heart, Check, Sparkles, Eye, Loader2 } from 'lucide-react';
 import { cn } from '../ui/Button';
 import Tag from '../ui/Tag';
+import MediaRenderer from '../ui/MediaRenderer';
 import { formatDistanceToNow } from 'date-fns';
 
 const statusColors = {
@@ -49,21 +50,35 @@ const ImageTile = ({ image, selected, selectionMode, onSelect, onOpen, index = 0
           />
         )}
 
-        <img
-          src={image.thumbnailUrl || `/uploads/${image.storage_key}`}
-          alt={image.filename}
+        <MediaRenderer
+          item={image}
           onLoad={() => setImgLoaded(true)}
-          className={cn(
-            'w-full h-auto block transition-transform duration-500',
+          imgClassName={cn(
+            'transition-transform duration-500',
             isHovered ? 'scale-[1.03]' : '',
             imgLoaded ? 'opacity-100' : 'opacity-0 absolute inset-0'
           )}
-          style={{ aspectRatio: `${image.width || 4}/${image.height || 3}` }}
         />
 
-        {/* Processing shimmer overlay */}
-        {image.status === 'processing' && (
-          <div className="absolute inset-0 shimmer opacity-25 pointer-events-none" />
+        {/* Processing / Queued overlay */}
+        {(image.status === 'processing' || image.status === 'queued') && (
+          <div className="absolute inset-0 bg-fg-primary/40 backdrop-blur-[2px] flex flex-col items-center justify-center pointer-events-none z-10">
+            <Loader2
+              size={24}
+              className={cn(
+                'text-white mb-2',
+                image.status === 'processing' ? 'animate-spin' : 'opacity-60'
+              )}
+            />
+            <span className="text-[11px] font-semibold text-white drop-shadow-sm">
+              {image.status === 'processing' ? 'Analyzing…' : 'Queued'}
+            </span>
+            {image.status === 'processing' && (
+              <div className="w-16 h-1 bg-white/30 rounded-full mt-1.5 overflow-hidden">
+                <div className="h-full bg-white rounded-full animate-progress-bar" />
+              </div>
+            )}
+          </div>
         )}
 
         {/* Confidence badge */}

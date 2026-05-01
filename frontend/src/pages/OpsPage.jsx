@@ -17,6 +17,9 @@ import {
   Database,
   Globe,
   Terminal,
+  Image as ImageIcon,
+  RotateCcw,
+  AlertTriangle,
 } from 'lucide-react';
 import Button from '../components/ui/Button';
 import { cn } from '../components/ui/Button';
@@ -251,6 +254,9 @@ const OpsPage = () => {
         </motion.div>
       </div>
 
+      {/* AI Processing Progress */}
+      <ProcessingProgress />
+
       {/* Endpoints health */}
       <motion.div
         initial={{ opacity: 0, y: 12 }}
@@ -408,6 +414,157 @@ const EndpointChecker = () => {
         </Button>
       </div>
     </div>
+  );
+};
+
+/* ─── AI Processing Progress ───────────────────────────────────────────────── */
+
+const ProcessingProgress = () => {
+  const [progress, setProgress] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [retrying, setRetrying] = useState(false);
+
+  const fetchProgress = useCallback(async () => {
+    try {
+      const res = await axios.get('/api/v1/ops/progress');
+      setProgress(res.data);
+    } catch {
+      setProgress(null);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchProgress();
+    const id = setInterval(fetchProgress, 3000);
+    return () => clearInterval(id);
+  }, [fetchProgress]);
+
+  const handleRetry = async () => {
+    setRetrying(true);
+    try {
+      await axios.post('/api/v1/ops/retry-failed');
+      await fetchProgress();
+    } catch {
+      // ignore
+    } finally {
+      setRetrying(false);
+    }
+  };
+
+  if (loading || !progress) return null;
+
+  const { total, queued, processing, analyzed, failed, percent_done, recent_failures } = progress;
+  const inProgress = queued + processing;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.18, duration: 0.4 }}
+      className="bg-surface rounded-xl border border-border p-5"
+    >
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-[13px] font-medium text-fg-primary flex items-center gap-2">
+          <ImageIcon size={14} className="text-fg-tertiary" />
+          AI Processing Progress
+        </h3>
+        <div className="flex items-center gap-2">
+          {failed > 0 && (
+            <Button variant="ghost" size="sm" onClick={handleRetry} loading={retrying}>
+              <RotateCcw size={12} className="mr-1" />
+              Retry {failed} failed
+            </Button>
+          )}
+          <Button variant="ghost" size="sm" onClick={fetchProgress}>
+            <RefreshCw size={12} />
+          </Button>
+        </div>
+      </div>
+
+      {/* Progress bar */}
+      <div className="mb-4">
+        <div className="flex items-center justify-between mb-1.5">
+          <span className="text-[11px] text-fg-tertiary">
+            {analyzed} / {total} analyzed
+          </span>
+          <span className="text-[12px] font-semibold text-fg-primary">{percent_done}%</span>
+        </div>
+        <div className="h-2.5 bg-surface-muted rounded-full overflow-hidden flex">
+          {analyzed > 0 && (
+            <div
+              className="bg-success transition-all duration-500 rounded-l-full"
+              style={{ width: `${(analyzed / total) * 100}%` }}
+            />
+          )}
+          {processing > 0 && (
+            <div
+              className="bg-accent animate-pulse"
+              style={{ width: `${(processing / total) * 100}%` }}
+            />
+          )}
+          {queued > 0 && (
+            <div
+              className="bg-fg-disabled/30"
+              style={{ width: `${(queued / total) * 100}%` }}
+            />
+          )}
+          {failed > 0 && (
+            <div
+              className="bg-danger rounded-r-full"
+              style={{ width: `${(failed / total) * 100}%` }}
+            />
+          )}
+        </div>
+      </div>
+
+      {/* Status counts */}
+      <div className="grid grid-cols-4 gap-3 mb-3">
+        <div className="text-center">
+          <p className="text-[16px] font-semibold text-success">{analyzed}</p>
+          <p className="text-[10px] text-fg-tertiary">Analyzed</p>
+        </div>
+        <div className="text-center">
+          <p className="text-[16px] font-semibold text-accent">{processing}</p>
+          <p className="text-[10px] text-fg-tertiary">Processing</p>
+        </div>
+        <div className="text-center">
+          <p className="text-[16px] font-semibold text-fg-tertiary">{queued}</p>
+          <p className="text-[10px] text-fg-tertiary">Queued</p>
+        </div>
+        <div className="text-center">
+          <p className="text-[16px] font-semibold text-danger">{failed}</p>
+          <p className="text-[10px] text-fg-tertiary">Failed</p>
+        </div>
+      </div>
+
+      {/* Active indicator */}
+      {inProgress > 0 && (
+        <div className="flex items-center gap-2 px-3 py-2 bg-accent-soft rounded-lg">
+          <Loader2 size={13} className="animate-spin text-accent" />
+          <span className="text-[11px] text-accent font-medium">
+            AI is processing {inProgress} image{inProgress > 1 ? 's' : ''}…
+          </span>
+        </div>
+      )}
+
+      {/* Recent failures */}
+      {recent_failures?.length > 0 && (
+        <div className="mt-3 space-y-1">
+          <p className="text-[11px] text-fg-tertiary flex items-center gap-1 mb-1">
+            <AlertTriangle size={11} /> Recent failures
+          </p>
+          {recent_failures.map((f) => (
+            <div key={f.id} className="flex items-center gap-2 px-2 py-1.5 bg-danger-soft/30 rounded text-[11px]">
+              <XCircle size={11} className="text-danger flex-shrink-0" />
+              <span className="text-fg-secondary truncate flex-1">{f.filename}</span>
+              <span className="text-fg-tertiary truncate max-w-[200px]">{f.reason}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </motion.div>
   );
 };
 

@@ -66,14 +66,37 @@ const TimelineCard = ({ image, index }) => {
         <div className="flex gap-0">
           {/* Thumbnail */}
           <div className="relative w-[140px] min-h-[100px] flex-shrink-0 overflow-hidden bg-surface-sunken">
-            <img
-              src={image.thumbnailUrl || `/uploads/${image.storage_key}`}
-              alt={image.filename}
-              className={cn(
-                'w-full h-full object-cover transition-transform duration-500',
-                isHovered ? 'scale-[1.05]' : ''
-              )}
-            />
+            {image.media_type === 'video' ? (
+              <>
+                <img
+                  src={image.thumbnail_key ? `/uploads/${image.thumbnail_key}` : undefined}
+                  alt={image.filename}
+                  className={cn(
+                    'w-full h-full object-cover transition-transform duration-500',
+                    isHovered ? 'scale-[1.05]' : ''
+                  )}
+                />
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div className="w-8 h-8 rounded-full bg-fg-primary/60 flex items-center justify-center">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                  </div>
+                </div>
+                {image.duration && (
+                  <div className="absolute bottom-1 right-1 bg-fg-primary/70 rounded px-1 py-0.5 text-[9px] font-mono text-white">
+                    {Math.floor(image.duration / 60)}:{String(Math.floor(image.duration % 60)).padStart(2, '0')}
+                  </div>
+                )}
+              </>
+            ) : (
+              <img
+                src={image.thumbnailUrl || `/uploads/${image.storage_key}`}
+                alt={image.filename}
+                className={cn(
+                  'w-full h-full object-cover transition-transform duration-500',
+                  isHovered ? 'scale-[1.05]' : ''
+                )}
+              />
+            )}
             {image.status === 'processing' && (
               <div className="absolute inset-0 shimmer opacity-30" />
             )}
